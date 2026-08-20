@@ -77,6 +77,7 @@
     break-inside:avoid;-webkit-column-break-inside:avoid}
   /* linha divisória só nos dias que têm evento */
   .dia.cheio{border-top:1px solid var(--sep)}
+  .dia.cheio.fecha{border-bottom:1px solid var(--sep)}
   .monthlab + .dia.cheio{border-top:0}
   .dia.livre{padding:1px 0}
   .dia.hoje{background:linear-gradient(90deg,var(--realce),transparent 70%);
@@ -101,9 +102,12 @@
   .stt{font-size:12px;font-weight:600;color:var(--cor);white-space:nowrap;flex:0 0 auto}
   .stt::before{content:"● ";font-size:8px;vertical-align:1px}
 
-  #tematoggle{background:none;border:1px solid var(--line2);color:var(--ink2);
-    border-radius:99px;padding:4px 11px;font-size:11px;cursor:pointer;margin-left:10px}
-  #tematoggle:hover{color:var(--ink);border-color:var(--ink3)}
+  .btn{background:none;border:1px solid var(--line2);color:var(--ink2);font:inherit;
+    border-radius:99px;padding:4px 11px;font-size:11px;cursor:pointer;margin-left:8px}
+  .btn:hover{color:var(--ink);border-color:var(--ink3)}
+  .btn.on{color:var(--gold);border-color:var(--gold)}
+  .controles{margin-top:5px;display:flex;flex-wrap:wrap;align-items:center;gap:4px 0}
+  .vazio{color:var(--ink3);font-size:13px;padding:26px 0}
 
   /* ---------- legenda / rodapé ---------- */
   .legenda{margin-top:22px;padding-top:14px;border-top:1px solid var(--line);
@@ -146,8 +150,12 @@
     <header class="top">
       <div>
         <div class="brandmark">AGENDA DE EVENTOS</div>
-        <a class="modeswitch" id="mswitch" href="?modo=painel">abrir modo painel</a>
-        <button id="tematoggle" type="button">tema claro</button>
+        <div class="controles">
+          <a class="modeswitch" id="mswitch" href="?modo=painel">abrir modo painel</a>
+          <button class="btn" id="vistatoggle" type="button">lista</button>
+          <button class="btn" id="filtrotoggle" type="button">só confirmados</button>
+          <button class="btn" id="tematoggle" type="button">tema claro</button>
+        </div>
       </div>
       <div class="stamp">
         <div id="stamp1"></div>
@@ -162,7 +170,7 @@
 </div>
 
 <script>
-const PAYLOAD = "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";
+const PAYLOAD = "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";
 const ABERTO = false;
 const STORE_KEY = "agenda_lc_pin_v1";
 const MODO = new URLSearchParams(location.search).get("modo") || "equipe";
@@ -186,6 +194,28 @@ const STATUS = {
 };
 const classeSt = s => "st-" + (STATUS[s] || "outro");
 const CASA_LABEL = {LC:"LC", IF:"IF", AMBAS:"LC+IF"};
+
+/* negócio fechado — o evento vai acontecer */
+const FECHADOS = ["Confirmado","Fechamento","Emitir NF","A receber","Finalizado","Recebido"];
+
+/* duas opções independentes: o que mostrar e como mostrar.
+   ?filtro=confirmados e ?vista=lista fixam a escolha (útil pro tablet). */
+const PARAMS = new URLSearchParams(location.search);
+const VISTA_KEY = "agenda_lc_vista_v1", FILTRO_KEY = "agenda_lc_filtro_v1";
+let VISTA  = PARAMS.get("vista")  || recall(VISTA_KEY)  || "calendario";
+let FILTRO = PARAMS.get("filtro") || recall(FILTRO_KEY) || "todos";
+
+let DADOS = null;
+
+function rotularBotoes(){
+  const v = document.getElementById("vistatoggle");
+  const f = document.getElementById("filtrotoggle");
+  if(!v || !f) return;
+  v.textContent = VISTA === "lista" ? "calendário" : "lista";
+  v.classList.toggle("on", VISTA === "lista");
+  f.textContent = FILTRO === "confirmados" ? "todos os status" : "só confirmados";
+  f.classList.toggle("on", FILTRO === "confirmados");
+}
 
 /* ---------- tema ---------- */
 const TEMA_KEY = "agenda_lc_tema_v1";
@@ -248,37 +278,64 @@ function descricao(e){
   return p.join(" · ");
 }
 
+function blocoDia(dt, evs, hoje, fecha){
+  const data = String(dt.getDate()).padStart(2,"0") + "/" + String(dt.getMonth()+1).padStart(2,"0");
+  const cab = '<div class="dbox"><b>'+data+'</b><span>'+WD[dt.getDay()]+'</span></div>';
+  const hj = ymd(dt) === ymd(hoje) ? " hoje" : "";
+
+  if(!evs.length) return '<div class="dia livre'+hj+'">'+cab+'<div class="livretxt">–</div></div>';
+
+  let html = '<div class="dia cheio'+hj+(fecha?" fecha":"")+'">'+cab+'<div class="dlist">';
+  for(const e of evs){
+    html += '<div class="lrow '+classeSt(e.st)+(e.exclusivo?" excl":"")+'">'
+      + '<span class="casa '+e.casa+'">'+CASA_LABEL[e.casa]+'</span>'
+      + '<span class="desc">'+esc(descricao(e))+'</span>'
+      + '<span class="stt">'+esc(e.st)+'</span></div>';
+  }
+  return html + '</div></div>';
+}
+
 function renderLista(mapa, ini, fim, hoje){
   let html = "", mesAtual = "";
+
+  /* vista "lista": só os dias que têm evento, sem os vazios */
+  if(VISTA === "lista"){
+    const dias = Object.keys(mapa).filter(k => k >= ymd(ini) && k <= ymd(fim)).sort();
+    if(!dias.length) return '<div class="vazio">Nenhum evento no período.</div>';
+    for(const k of dias){
+      const dt = parseD(k);
+      const mk = MES[dt.getMonth()] + " de " + dt.getFullYear();
+      if(mk !== mesAtual){ mesAtual = mk; html += '<div class="monthlab">'+mk+'</div>' }
+      html += blocoDia(dt, mapa[k], hoje, false);
+    }
+    return html;
+  }
+
+  /* vista "calendário": todos os dias, com linha abaixo do último dia cheio de cada bloco */
+  let algum = false;
   for(let dt = new Date(ini); dt <= fim; dt = addDays(dt,1)){
     const k = ymd(dt), evs = mapa[k] || [];
     const mk = MES[dt.getMonth()] + " de " + dt.getFullYear();
     if(mk !== mesAtual){ mesAtual = mk; html += '<div class="monthlab">'+mk+'</div>' }
 
-    const hj = k === ymd(hoje) ? " hoje" : "";
-    const data = String(dt.getDate()).padStart(2,"0") + "/" + String(dt.getMonth()+1).padStart(2,"0");
-    const cab = '<div class="dbox"><b>'+data+'</b><span>'+WD[dt.getDay()]+'</span></div>';
-
-    if(!evs.length){
-      html += '<div class="dia livre'+hj+'">'+cab+'<div class="livretxt">–</div></div>';
-      continue;
-    }
-    html += '<div class="dia cheio'+hj+'">'+cab+'<div class="dlist">';
-    for(const e of evs){
-      html += '<div class="lrow '+classeSt(e.st)+(e.exclusivo?" excl":"")+'">'
-        + '<span class="casa '+e.casa+'">'+CASA_LABEL[e.casa]+'</span>'
-        + '<span class="desc">'+esc(descricao(e))+'</span>'
-        + '<span class="stt">'+esc(e.st)+'</span></div>';
-    }
-    html += '</div></div>';
+    /* fecha embaixo só se o dia seguinte não abrir a própria linha de cima */
+    const prox = addDays(dt,1);
+    const proxTemEvento = prox <= fim && (mapa[ymd(prox)] || []).length > 0
+      && MES[prox.getMonth()] === MES[dt.getMonth()];
+    if(evs.length) algum = true;
+    html += blocoDia(dt, evs, hoje, evs.length && !proxTemEvento);
   }
+  if(!algum) html += '<div class="vazio">Nenhum evento no período.</div>';
   return html;
 }
 
 function desenhar(data){
   const hoje = new Date(); hoje.setHours(0,0,0,0);
   const ini = parseD(data.inicio), fimTotal = parseD(data.fim);
-  const mapa = porDia(data.eventos);
+  const visiveis = FILTRO === "confirmados"
+    ? data.eventos.filter(e => FECHADOS.includes(e.st))
+    : data.eventos;
+  const mapa = porDia(visiveis);
   const alvo = document.getElementById("conteudo");
   const totalDias = Math.round((fimTotal - ini)/864e5) + 1;
 
@@ -296,7 +353,7 @@ function desenhar(data){
         + " — o restante está na versão de celular" : "";
   }
 
-  const usados = [...new Set(data.eventos.map(e=>e.st))]
+  const usados = [...new Set(visiveis.map(e=>e.st))]
     .sort((a,b)=>Object.keys(STATUS).indexOf(a)-Object.keys(STATUS).indexOf(b));
   document.getElementById("legenda").innerHTML =
     '<span class="lg"><b style="color:var(--lc)">LC</b> La Casserole</span>'
@@ -325,6 +382,7 @@ function render(data){
     s.classList.remove("hidden");
     s.textContent = "Esta tela não é atualizada há " + Math.floor(horas/24) + " dia(s). Confirme na base antes de usar.";
   }
+  DADOS = data;
   desenhar(data);
   let t; addEventListener("resize", ()=>{clearTimeout(t); t=setTimeout(()=>desenhar(data),250)});
 }
@@ -353,6 +411,15 @@ async function attempt(pin, silent){
 
 (async function(){
   aplicarTema(temaInicial());
+  document.getElementById("vistatoggle").addEventListener("click", ()=>{
+    VISTA = VISTA === "lista" ? "calendario" : "lista";
+    store(VISTA_KEY, VISTA); rotularBotoes(); if(DADOS) desenhar(DADOS);
+  });
+  document.getElementById("filtrotoggle").addEventListener("click", ()=>{
+    FILTRO = FILTRO === "confirmados" ? "todos" : "confirmados";
+    store(FILTRO_KEY, FILTRO); rotularBotoes(); if(DADOS) desenhar(DADOS);
+  });
+  rotularBotoes();
   document.getElementById("tematoggle").addEventListener("click", ()=>{
     const novo = document.documentElement.getAttribute("data-tema") === "claro" ? "escuro" : "claro";
     store(TEMA_KEY, novo); aplicarTema(novo);
